@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  View >> {{g.pagename}}
+{% endblock %}
+
+{% block content %}
+
+  {{ html|safe }}
+
+{% endblock %}

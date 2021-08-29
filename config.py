@@ -4,14 +4,16 @@ import os
 
 ## Site Settings
 siteName = "Home Intranet Wiki"
-#hostname
-#port
+siteHostname = "0.0.0.0"
+sitePort = int(os.environ.get('PORT', 5000))
 
 ## Directories
 siteBase = os.getcwd()
-sitePages = "/Pages"
+siteStatic = "static"
+sitePages = "Pages"
 siteAssets = "_assets"
+siteHome = "start"
 
 ## CSS
-siteCSS = "default.css"
+siteCSS = "default.css"  # Not needed?
 siteCSSOverride = True

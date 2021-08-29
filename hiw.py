@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 
-from flask import Flask, redirect, send_from_directory
+import logging
+from flask import Flask, redirect, send_from_directory, flash, g, render_template, request, url_for
 import config
 import os
 import markdown
+
+logging.basicConfig(level=logging.INFO)
 
 # source env/bin/activate
 
@@ -13,32 +16,32 @@ app = Flask(__name__)
 def index():
     return redirect('/start/')
 
-@app.route("/<pagename>/")
-def displaypage(pagename):
-    page = open("./Pages/" + pagename + ".md", "r")
-    ## Remove me as template should do this
-    csspage = open(os.path.join(config.siteBase, 'static', config.siteCSS), "r")
-    html = "<html><head><style>" + csspage.read() + "</style></head>"
-    ##
-
-    html += markdown.markdown(page.read(), extensions=['extra','wikilinks','toc','admonition'])
-    
-    return html
-
 @app.route("/_assets/<filename>")
 ## Send an image or file from asset directory
 def sendfile(filename):
-    directory = os.path.join(config.siteBase, 'Pages/_assets/') #app.config['UPLOAD_FOLDER'])
-    print(directory) ###for debug
+    directory = os.path.join(config.siteBase, config.sitePages, config.siteAssets) #app.config['UPLOAD_FOLDER'])
+    logging.info("Asset requested: " + directory + " | " + filename)
     return send_from_directory(directory, filename)  #flask.send_from_directory
+
+@app.route("/<pagename>/")
+def displaypage(pagename):
+    logging.info('Page request: ' + pagename)
+    page = open("./Pages/" + pagename + ".md", "r")
+    logging.info("Sending: " + pagename)
+    ## Remove me as template should do this
+   ##csspage = open(os.path.join(config.siteBase, config.siteStatic, config.siteCSS), "r")
+   ## html = "<html><head><style>" + csspage.read() + "</style></head>"
+    ##
+    g.siteName = config.siteName
+    g.pagename = pagename
+    html = markdown.markdown(page.read(), extensions=['extra','wikilinks','toc','admonition'])
+    
+    return render_template("page.html", html=html)
 
 @app.route('/favicon.ico')
 def favicon():
-    return send_from_directory(os.path.join(app.root_path, 'static'),
-                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
+    return send_from_directory(os.path.join(app.root_path, config.siteStatic),
+        'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 if __name__ == "__main__":
-    # Bind to PORT if defined, otherwise default to 5000.
-    port = int(os.environ.get('PORT', 5000))
-    host = '0.0.0.0'
-    app.run(host=host, port=port)
+    app.run(host=config.siteHostname, port=config.sitePort)
