@@ -18,6 +18,12 @@ This is my home wiki
 ## Syntax Reference
 For markdown and markdown extra, see [[markdown-cheat-sheet]].
 
+### Name Spaces
+- folders inside the Pages directory
+- [[ns1]]
+- [[ns1:ns1]]
+- [Name Space 1, ns1](/ns1/ns1)
+  
 ### Links
 Also, regular linked markdown works:
 

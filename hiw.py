@@ -38,6 +38,24 @@ def displaypage(pagename):
     
     return render_template("page.html", html=html)
 
+@app.route("/<namespace>/<pagename>/")
+def displaynspage(namespace, pagename):
+    logging.info('Page request: ' + pagename)
+    page = open("./Pages/" + namespace + "/" + pagename + ".md", "r")
+    logging.info("Sending: " + namespace + ":" + pagename)
+    g.siteName = config.siteName
+    g.pagename = namespace + ":" + pagename
+    html = markdown.markdown(page.read(), extensions=['extra','wikilinks','toc','admonition'])
+    
+    return render_template("page.html", html=html)
+
+@app.route("/<namespace>/_assets/<filename>")
+## Send an image or file from asset directory
+def sendnsfile(namespace, filename):
+    directory = os.path.join(config.siteBase, config.sitePages, namespace, config.siteAssets) #app.config['UPLOAD_FOLDER'])
+    logging.info("Asset requested: " + directory + " | " + filename)
+    return send_from_directory(directory, filename)  #flask.send_from_directory
+
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, config.siteStatic),
