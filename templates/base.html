@@ -1,33 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    {% block head %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='default.css') }}">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>{% block title %}{{g.siteName}}{% endblock %}</title>
-    {% endblock %}
-</head>
-<nav>
-    {% block navigation %}  
-        <a class="active" href="/">Home</a>
-    {% endblock %}
-</nav>
-<header>
-    {% block header %}{% endblock %}
-</header>
-<body>
-    <section class="content">
-        {% for message in get_flashed_messages() %}
-          <div class="flash">{{ message }}</div>
-        {% endfor %}
-        {% block content %}{% endblock %}
-    </section>
-</body>
-<footer>
-    {% block footer %}
-    Powered by Python and HIW.
-    {% endblock %}
-</footer>
+    <head>
+        {% block head %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='default.css') }}">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <title>{% block title %}{{g.siteName}}{% endblock %}</title>
+        {% endblock %}
+    </head>  
+    <body>
+        <div class="container">
+            <div id ="navi">
+                {% block topnavigation %}  
+                    <a class="active" href="/">Home</a>
+                {% endblock %}
+            </div>
+            <div id="head">
+                {% block header %}
+                    Placeholder HEADER
+                {% endblock %}
+            </div>
+            <div id="sidebar">
+                {% block sidebar %}
+                    Placeholder Sidebar
+                {% endblock %}
+            </div>
+            <div id="page">
+                {% for message in get_flashed_messages() %}
+                <div class="flash">{{ message }}</div>
+                {% endfor %}
+                {% block content %}{% endblock %}
+            </div>
+            <div id="foot">
+                {% block footer %}
+                Powered by Python and HIW.
+                {% endblock %}
+            </div>
+        </div>
+    </body>
 </html>
 
 

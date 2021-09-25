@@ -6,33 +6,33 @@ This is my home wiki
 - Use plaintext markdown files
   - defualt location is the Pages subdirectory
   - _asset subfolder used for organization
-  - ```default.css``` can be overwritten or defined in the config
+  - ``default.css`` can be overwritten or defined in the config
 
 ### Config.py
-  - to have ```![[]]``` not default to ```_assets```, change siteAssets setting.  ```""``` will stay in current directory
-  - ```siteCSS = "default.css"``` - the css file or when there is no override
-  - ```siteCSSOverride = True``` - if a css file is in the pages folder or sub folder - TO BE IMPLEMENTED
+  - to have ``![[]]`` not default to ``_assets``, change siteAssets setting.  ``""`` will stay in current directory
+  - ``siteCSS = "default.css"`` - the css file or when there is no override
+  - ``siteCSSOverride = True`` - if a css file is in the pages folder or sub folder - TO BE IMPLEMENTED
 
 ------
 
 ## Syntax Reference
 For markdown and markdown extra, see [[markdown-cheat-sheet]].
-
-### Name Spaces
-- folders inside the Pages directory
-- [[ns1]]
-- [[ns1:ns1]]
-- [Name Space 1, ns1](/ns1/ns1)
   
 ### Links
 Also, regular linked markdown works:
 
-  - ```[[markdown-cheat-sheet]]``` - intrawiki links (**same folder/namespace**) - [[markdown-cheat-sheet]]
-  - ```[alt text](url) ``` for links -- [Github](https://github.com/)
+  - ``[[markdown-cheat-sheet]]`` - intrawiki links (**same folder/namespace**) - [[markdown-cheat-sheet]]
+  - ``[alt text](url) `` for links -- [Github](https://github.com/)
+  - ``<http://azcastle.com>`` results in <http://azcastle.com> 
+
+### Name Spaces
+- folders inside the Pages directory
+- ``[[anamespace:nsstart]]`` - [[anamespace:nsstart]]
+- ``[anamespace:nsstart](/anamespace/nsstart)`` - [anamespace:nsstart](/anamespace/nsstart)
 
 ### Embeds
 
-  - ```![image alt text](_assets/file)``` to embed an image
+  - ``![image alt text](_assets/file)`` to embed an image
   
 ![An Image](/_assets/logo.png)
 
@@ -40,26 +40,43 @@ Also, regular linked markdown works:
 
 ### Admonitions
 
-```!!! Note "This is an admonition - Note"```
+``!!! Note "This is an admonition - Note"``
 
 !!! Note "This is an admonition - Note"
 
-```!!! Tip "This is tip"```
+``!!! Tip "This is tip"``
 
 !!! Tip "This is tip"
 
-```!!! important "This is important"```
+``!!! important "This is important"``
 
 !!! important "This is important"
 
-```!!! Warning "This is warning"```
+``!!! Warning "This is warning"``
 
 !!! Warning "This is warning"
 
 ### Quotes
+```
+> This is an important quote - 1st line.
+> Another line.
+```
 
 > This is an important quote - 1st line.
 > Another line.
+
+### Highlighting
+
+``==This is highlighted.==``
+
+==This is highlighted.==
+
+This is not.
+
+``???But this is!???``
+
+???But this is!???
+
 
 ## Testing
 
