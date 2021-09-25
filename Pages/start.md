@@ -36,7 +36,17 @@ Also, regular linked markdown works:
   
 ![An Image](/_assets/logo.png)
 
-- :::NOT YET:::  ![[_assets/logo.png]] to embed an image or file
+- ``![[_assets/logo.png]]``
+
+![[_assets/logo.png]]
+
+- ``![[_assets/logo.png|150]]`` to embed an image or file - set width
+  
+![[_assets/logo.png|150]]
+
+- ``![[_assets/logo.png|50x150]]`` to embed an image or file - set size in #W#x#H# pattern
+  
+![[_assets/logo.png|50x150]]
 
 ### Admonitions
 
