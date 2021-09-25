@@ -1,2 +1,2 @@
-[Home](../start)   
-[anamespace](/anamespace/nsstart)   
+[[start]]  
+[[anamespace:nsstart]]

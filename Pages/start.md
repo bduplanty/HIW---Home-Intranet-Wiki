@@ -1,5 +1,7 @@
 # Home Intranet Wiki (HIW)
 
+[TOC]
+
 This is my home wiki
 
 ## Set-up and information

@@ -14,8 +14,6 @@ logging.basicConfig(level=logging.INFO)
 
 # if wiki:nav?? - display first x lines as navigation? otherwise home only?
 # if wiki:footer - replace footer
-# extend wikilinks extension to do namespace and ![[]]
-
 
 app = Flask(__name__)
 
@@ -49,9 +47,9 @@ def displaynspage(namespace, pagename):
     logging.info("Sending: " + namespace + ":" + pagename)
     g.siteName = config.siteName
     g.pagename = namespace + ":" + pagename
-    html = markdown.markdown(page.read(), extensions=['extra','wikilinks','toc','admonition'])
-    
-    return render_template("page.html", html=html)
+    html = markdown.markdown(page.read(), extensions=['extra','wikilinks','toc','admonition','MarkdownHighlight.highlight:HighlightExtension','hiwmd:hiwExtension'])
+    sidebar = showsidebar()
+    return render_template("page.html", html=html, sidebarhtml=sidebar)
 
 @app.route("/<namespace>/_assets/<filename>")
 ## Send an image or file from asset directory
@@ -72,7 +70,7 @@ def showsidebar():
     except OSError:
        logging.debug('Unable to open wiki:sidebar.md')
     else:
-        sidebarhtml = markdown.markdown(sidebar.read(), extensions=['extra','wikilinks'])
+        sidebarhtml = markdown.markdown(sidebar.read(), extensions=['extra','wikilinks','MarkdownHighlight.highlight:HighlightExtension','hiwmd:hiwExtension'])
         sidebar.close()
         logging.info('returning sidebar.md')
         return sidebarhtml
