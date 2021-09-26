@@ -39,10 +39,15 @@ logging.basicConfig(level=logging.INFO)
 
 # Global Vars
 NSLINK_RE =r'\[{2}(.*?)\:(.*?)\]{2}'
+NSLINKT_RE =r'\[{2}(.*?)\:(.*?)\|(.*?)\]{2}'
+NSLINKTA_RE = r'\[{2}([^:].[^:]*)\|(.*?)\]{2}'
 IMAGENSIZE_RE =r'\!\[{2}(.*?)\]{2}' 
 IMAGESSIZE_RE =r'\!\[{2}(.*?)\|(.*?)\]{2}'
 IMAGEMSIZE_RE =r'\!\[{2}(.*?)\|(.*?)x(.*?)\]{2}'
-# https://regex101.com/r/ccBOf5/2/
+#NS example - https://regex101.com/r/Ycdx5c/1
+#NS with title - https://regex101.com/r/4KygKW/1
+#NSTA - allow for root links with title
+# https://regex101.com/r/dcvsJM/1
 # embeded and single size == width
 # https://regex101.com/r/rD4fbj/1
 # embded and multiple size 300x200
@@ -73,7 +78,17 @@ class hiwExtension(Extension):
         wikilinkNSPattern = hiwInlineProcessor(NSLINK_RE, self.getConfigs())
         wikilinkNSPattern.md = md
         md.inlinePatterns.register(wikilinkNSPattern, 'nspattern', 75)
-        logging.info("hiw registered")
+        logging.info("hiw NS registered")
+
+        wikilinkNSTPattern = hiwInlineProcessor(NSLINKT_RE, self.getConfigs())
+        wikilinkNSTPattern.md = md
+        md.inlinePatterns.register(wikilinkNSTPattern, 'nstpattern', 76)
+        logging.info("hiw NS-T registered")
+
+        wikilinkNSTAPattern = hiwInlineProcessor(NSLINKTA_RE, self.getConfigs())
+        wikilinkNSTAPattern.md = md
+        md.inlinePatterns.register(wikilinkNSTAPattern, 'nstapattern', 77)
+        logging.info("hiw NS-TA registered")
 
         wikilinkEmbedMultiSizePattern = hiwembedInlineProcessor(IMAGEMSIZE_RE, self.getConfigs())
         wikilinkEmbedMultiSizePattern.md = md
@@ -82,12 +97,12 @@ class hiwExtension(Extension):
 
         wikilinkEmbedWidthSizePattern = hiwembedInlineProcessor(IMAGESSIZE_RE, self.getConfigs())
         wikilinkEmbedWidthSizePattern.md = md
-        md.inlinePatterns.register(wikilinkEmbedWidthSizePattern, 'embedwithsize', 75)
+        md.inlinePatterns.register(wikilinkEmbedWidthSizePattern, 'embedwithsize', 79)
         logging.info("embedwidthsize registered")
 
         wikilinkEmbedNoSizePattern = hiwembedInlineProcessor(IMAGENSIZE_RE, self.getConfigs())
         wikilinkEmbedNoSizePattern.md = md
-        md.inlinePatterns.register(wikilinkEmbedNoSizePattern, 'embednosize', 50)
+        md.inlinePatterns.register(wikilinkEmbedNoSizePattern, 'embednosize', 78)
         logging.info("embednosize registered")
 
 class hiwInlineProcessor(InlineProcessor):
@@ -96,13 +111,27 @@ class hiwInlineProcessor(InlineProcessor):
         self.config = config
 
     def handleMatch(self, m, data):
-        if m.group(1).strip():
+        if m.group(2).strip():
             base_url, end_url, html_class = self._getMeta()
-            nslabel = m.group(1).strip()
-            label = m.group(2).strip()
-            url = self.config['build_url'](nslabel+'/'+label, base_url, end_url)
+
+            if self.pattern == NSLINKTA_RE:
+                ns = ''
+                page = m.group(1).strip()
+                label = m.group(2).strip()
+            else:
+                ns = m.group(1).strip()
+                page = m.group(2).strip()
+                if self.pattern == NSLINKT_RE:
+                    label = m.group(3).strip()
+                else:
+                    label = ns + ':' + page 
+            if ns > '':
+                pagepath = ns + '/' + page
+            else:
+                pagepath = page
+            url = self.config['build_url'](pagepath, base_url, end_url)
             a = etree.Element('a')
-            a.text = nslabel + ':' + label
+            a.text = label
             a.set('href', url)
             if html_class:
                 a.set('class', html_class)

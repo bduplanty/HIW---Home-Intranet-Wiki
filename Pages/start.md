@@ -24,12 +24,16 @@ For markdown and markdown extra, see [[markdown-cheat-sheet]].
 Also, regular linked markdown works:
 
   - ``[[markdown-cheat-sheet]]`` - intrawiki links (**same folder/namespace**) - [[markdown-cheat-sheet]]
+  - ``[[markdown-cheat-sheet|Markdown Reference]]`` - interwiki link with title - [[markdown-cheat-sheet|Markdown Reference]]
   - ``[alt text](url) `` for links -- [Github](https://github.com/)
   - ``<http://azcastle.com>`` results in <http://azcastle.com> 
 
 ### Name Spaces
 - folders inside the Pages directory
+- ``[[:start]]`` - Root level link to page start - [[:start]]
+- ``[[:start|Home]]`` - Root level link with title - [[:start|Home]]
 - ``[[anamespace:nsstart]]`` - [[anamespace:nsstart]]
+- ``[[anamespace:nsstart|NS1 Home]]`` - namespace page call with title - [[anamespace:nsstart|NS1 Home]]
 - ``[anamespace:nsstart](/anamespace/nsstart)`` - [anamespace:nsstart](/anamespace/nsstart)
 
 ### Embeds

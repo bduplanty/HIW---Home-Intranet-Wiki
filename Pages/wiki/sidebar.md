@@ -1,2 +1,2 @@
-[[start]]  
-[[anamespace:nsstart]]
+[[start|Home]]
+[[anamespace:nsstart|NSStart]]
