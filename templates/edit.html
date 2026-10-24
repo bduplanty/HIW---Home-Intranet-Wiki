@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block head %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='easymde/font-awesome.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='easymde/easymde.min.css') }}">
+{% endblock %}
+
+{% block header %}
+  Edit >> {{g.pagename}}
+{% endblock %}
+
+{% block content %}
+  <form method="post" class="editform">
+    <input type="hidden" name="base" value="{{ base }}">
+    {% if error %}<div class="flash">{{ error }}</div>{% endif %}
+    {% if askname %}
+      <p><label>Your name: <input type="text" name="name" value="{{ editor }}" maxlength="40" required autofocus></label></p>
+    {% else %}
+      <p class="editas">Editing as <strong>{{ editor }}</strong> &middot; <a href="?rename=1">not you?</a></p>
+    {% endif %}
+    <textarea id="content" name="content">{{ source }}</textarea>
+    <p>
+      <button type="submit" class="pill">Save</button>
+      <a class="pill pill-quiet" href="javascript:history.back()">Cancel</a>
+    </p>
+  </form>
+  <script src="{{ url_for('static', filename='easymde/easymde.min.js') }}"></script>
+  <script>
+    new EasyMDE({
+      element: document.getElementById('content'),
+      autoDownloadFontAwesome: false,
+      spellChecker: false,
+      status: false,
+      forceSync: true
+    });
+  </script>
+{% endblock %}
+
+{% block sidebar%}
+  {{ sidebarhtml|safe }}
+{% endblock %}

@@ -9,7 +9,9 @@ Deals with:
 
   [[ns:page]]
 
-Based and exapnded on the wikikinks extention
+  ==highlighted==  - renders as <mark>
+
+Based and exapnded on the wikikinks extension
 """
 
 '''
@@ -30,7 +32,7 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 '''
 
 from markdown import Extension
-from markdown.inlinepatterns import InlineProcessor
+from markdown.inlinepatterns import InlineProcessor, SimpleTagPattern
 import xml.etree.ElementTree as etree
 import re
 import logging
@@ -41,6 +43,7 @@ logging.basicConfig(level=logging.INFO)
 NSLINK_RE =r'\[{2}(.*?)\:(.*?)\]{2}'
 NSLINKT_RE =r'\[{2}(.*?)\:(.*?)\|(.*?)\]{2}'
 NSLINKTA_RE = r'\[{2}([^:].[^:]*)\|(.*?)\]{2}'
+MARK_RE = r'(={2})(?!\s)(.+?)(?<!\s)={2}'
 IMAGENSIZE_RE =r'\!\[{2}(.*?)\]{2}' 
 IMAGESSIZE_RE =r'\!\[{2}(.*?)\|(.*?)\]{2}'
 IMAGEMSIZE_RE =r'\!\[{2}(.*?)\|(.*?)x(.*?)\]{2}'
@@ -89,6 +92,10 @@ class hiwExtension(Extension):
         wikilinkNSTAPattern.md = md
         md.inlinePatterns.register(wikilinkNSTAPattern, 'nstapattern', 77)
         logging.info("hiw NS-TA registered")
+
+        # ==text== highlight; below backticks so code spans stay literal
+        md.inlinePatterns.register(SimpleTagPattern(MARK_RE, 'mark'), 'hiwmark', 65)
+        logging.info("hiw mark registered")
 
         wikilinkEmbedMultiSizePattern = hiwembedInlineProcessor(IMAGEMSIZE_RE, self.getConfigs())
         wikilinkEmbedMultiSizePattern.md = md

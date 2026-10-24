@@ -75,11 +75,30 @@ Also, regular linked markdown works:
 ### Quotes
 ```
 > This is an important quote - 1st line.
+
 > Another line.
 ```
 
 > This is an important quote - 1st line.
+
 > Another line.
+
+```
+> This is a sentence.
+> This is another sentence.
+```
+> This is a sentence.
+> This is another sentence.
+
+Blocks can also be made using \``` as fences to create a whole block.
+```
+Here is a whole block of text.
+The could be code, etc.
+Multilne
+
+And blank lines!
+```
+
 
 ### Highlighting
 

@@ -20,3 +20,12 @@ This is a work in progress.  More to follow, if anyone is interested...
  - Create virtual environment at your pleasure and activate
  - ```pip3 install -r requirements.txt``` to install dependencies
  - ```python3 hiw.py``` to execute
+
+## Virtual environment
+ - Create (first time only): ```python3 -m venv env```
+ - Activate (macOS/Linux): ```source env/bin/activate```
+ - Activate (Windows): ```env\Scripts\activate```
+ - Deactivate: ```deactivate```
+
+ ## Developing
+ 
