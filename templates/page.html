@@ -14,5 +14,5 @@
 
 {% block footer %}
   {{ super() }}
-  {% if g.edited %}<span class="hiwright">Last edited {% if g.editor %}by {{ g.editor }} {% endif %}on {{ g.edited.strftime('%Y-%m-%d %H:%M') }}</span>{% endif %}
+  <span class="hiwright">{% if g.edited %}Last edited {% if g.editor %}by {{ g.editor }} {% endif %}on {{ g.edited.strftime('%Y-%m-%d %H:%M') }} &middot; {% endif %}<a href="{{ g.historyurl }}">View Page History</a></span>
 {% endblock %}

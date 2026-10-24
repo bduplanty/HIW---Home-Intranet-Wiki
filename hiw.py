@@ -109,6 +109,39 @@ def pageversion(names):
         return ""
 
 
+VERSION_RE = re.compile(r'^\d{8}T\d{6}__[\w\- ]+$')
+
+
+def pageurl(names):
+    if len(names) == 1:
+        return url_for("displaypage", pagename=names[0])
+    return url_for("displaynspage", namespace=names[0], pagename=names[1])
+
+
+def versions(names):
+    """Return saved versions of a page as (version, editor, datetime), newest first."""
+    found = []
+    try:
+        files = os.listdir(historydir(names))
+    except OSError:
+        return found
+    for name in sorted(files, reverse=True):
+        stem = name[:-3]
+        if name.endswith(".md") and VERSION_RE.match(stem):
+            found.append((stem, stem[17:], datetime.strptime(stem[:15], TS_FORMAT)))
+    return found
+
+
+def readversion(names, version):
+    if not VERSION_RE.match(version or ""):
+        abort(404)
+    path = safe_join(historydir(names), version + ".md")
+    if path is None or not os.path.isfile(path):
+        abort(404)
+    with open(path, "r", encoding="utf-8") as f:
+        return f.read()
+
+
 def savepage(names, content, editor):
     path = pagepath(names)
     os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -128,6 +161,7 @@ def renderpage(names, source):
     g.siteName = config.siteName
     g.pagename = ":".join(names)
     g.editurl = url_for("editpage", path="/".join(names))
+    g.historyurl = url_for("pagehistory", path="/".join(names))
     g.editor, g.edited = lastedit(names, pagepath(names))
     html = markdown.markdown(source, extensions=MD_EXTENSIONS)
     return render_template("page.html", html=html, sidebarhtml=showsidebar())
@@ -168,11 +202,12 @@ def editpage(path):
                     error = "This page was changed{} since you opened it. Your text is kept below; press Save again to overwrite their version, or open the current page in another tab first.".format(
                         " by {} at {}".format(who, when.strftime("%H:%M")) if who and when else "")
             if error is None:
-                response = redirect(url_for("displaypage", pagename=names[0]) if len(names) == 1
-                                    else url_for("displaynspage", namespace=names[0], pagename=names[1]))
+                response = redirect(pageurl(names))
                 response.set_cookie(EDITOR_COOKIE, editor, max_age=EDITOR_COOKIE_AGE, samesite="Lax")
                 return response
         source = request.form.get("content", "")
+    elif request.args.get("restore"):
+        source = readversion(names, request.args["restore"])
     elif os.path.isfile(pagepath(names)):
         source = readpage(*names)
     else:
@@ -181,6 +216,24 @@ def editpage(path):
     g.pagename = ":".join(names)
     return render_template("edit.html", source=source, editor=editor, base=base, askname=(not cookie or "rename" in request.args or error),
                            error=error, sidebarhtml=showsidebar())
+
+@app.route("/_history/<path:path>/")
+def pagehistory(path):
+    names = tuple(path.split("/"))
+    if len(names) > 2:
+        abort(404)
+    pagepath(names)
+    g.siteName = config.siteName
+    g.pagename = ":".join(names)
+    g.pageurl = pageurl(names)
+    g.editurl = url_for("editpage", path=path)
+    version = request.args.get("v")
+    html = who = when = None
+    if version:
+        html = markdown.markdown(readversion(names, version), extensions=MD_EXTENSIONS)
+        who, when = version[17:], datetime.strptime(version[:15], TS_FORMAT)
+    return render_template("history.html", versions=versions(names), version=version, html=html,
+                           who=who, when=when, sidebarhtml=showsidebar())
 
 @app.route("/<namespace>/_assets/<filename>")
 ## Send an image or file from asset directory

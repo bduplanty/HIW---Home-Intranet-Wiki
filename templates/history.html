@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  History >> {{g.pagename}}  <a class="pill hiwright" href="{{ g.pageurl }}">Back to page</a>
+{% endblock %}
+
+{% block content %}
+  {% if version %}
+    <p class="editas">Version saved by <strong>{{ who }}</strong> on {{ when.strftime('%Y-%m-%d %H:%M:%S') }}
+      &middot; <a href="{{ url_for('editpage', path=g.pagename.replace(':', '/')) }}?restore={{ version }}">Restore this version</a>
+      &middot; <a href="{{ url_for('pagehistory', path=g.pagename.replace(':', '/')) }}">All versions</a></p>
+    <hr>
+    {{ html|safe }}
+  {% else %}
+    <h1>Page history</h1>
+    {% if versions %}
+      <table>
+        <tr><th>Saved</th><th>By</th><th></th></tr>
+        {% for v, who, when in versions %}
+        <tr>
+          <td>{{ when.strftime('%Y-%m-%d %H:%M:%S') }}{% if loop.first %} (latest){% endif %}</td>
+          <td>{{ who }}</td>
+          <td><a href="?v={{ v }}">View</a> &middot; <a href="{{ url_for('editpage', path=g.pagename.replace(':', '/')) }}?restore={{ v }}">Restore</a></td>
+        </tr>
+        {% endfor %}
+      </table>
+    {% else %}
+      <p>No versions have been saved through the editor yet.</p>
+    {% endif %}
+  {% endif %}
+{% endblock %}
+
+{% block sidebar%}
+  {{ sidebarhtml|safe }}
+{% endblock %}

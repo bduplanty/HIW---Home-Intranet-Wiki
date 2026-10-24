@@ -9,6 +9,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/).
 - Page editing with EasyMDE (vendored in `static/easymde/`, works offline): pill-style "Edit" button in the header, `/_edit/<page>/` and `/_edit/<ns>/<page>/` routes, atomic saves, new pages can be created by editing them.
 - Editor name is asked on first edit and kept in a 30-day cookie (`hiw_editor`); "not you?" lets it be changed.
 - Every save is snapshotted to `Pages/.history/<page>.md/<timestamp>__<editor>.md`; the page footer shows who last edited and when.
+- "View Page History" link in the footer: lists saved versions, view any of them, and restore one into the editor (`/_history/<page>/`).
 - Edit conflict protection: a save is refused (and the editor text kept) if the page changed since it was opened.
 - Documentation in the `docs` namespace (`Pages/docs/`), linked from the sidebar.
 - `.hiwright` / `.hiwcenter` / `.pill` CSS classes.
