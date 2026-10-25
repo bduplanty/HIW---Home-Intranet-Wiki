@@ -10,7 +10,7 @@ Page and namespace names may use letters, numbers, spaces, `-` and `_` only.
 
 ## Your name
 
-The first time you edit you are asked for your name. It is stored in a cookie (`hiw_editor`) for 30 days and is renewed every time you save, so you are only asked again after a month without editing.
+The first time you edit you are asked for your name. It is stored in a cookie (`hiw_editor`) for 30 days (`siteEditorCookie` and `siteEditorCookieDays` in `config.py`) and is renewed every time you save, so you are only asked again after a month without editing.
 
 The editor shows *Editing as Name*. If that is not you (a shared computer, for example), click **not you?** and type a different name. The name is self-reported; there are no passwords.
 

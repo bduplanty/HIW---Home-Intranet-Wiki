@@ -5,6 +5,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- Automated tests (`pytest`) in `tests/`; development dependencies in `requirements-dev.txt`.
 - README instructions for creating, activating and deactivating the virtual environment.
 - Page editing with EasyMDE (vendored in `static/easymde/`, works offline): pill-style "Edit" button in the header, `/_edit/<page>/` and `/_edit/<ns>/<page>/` routes, atomic saves, new pages can be created by editing them.
 - Editor name is asked on first edit and kept in a 30-day cookie (`hiw_editor`); "not you?" lets it be changed.
@@ -23,6 +24,8 @@ Format based on [Keep a Changelog](https://keepachangelog.com/).
 - TinyMCE (was never wired up).
 
 ### Changed
+- Editor cookie name and lifetime are now `siteEditorCookie` and `siteEditorCookieDays` in `config.py`, and every setting there is commented.
+- The asset URL prefix follows `siteAssets` and the sidebar page is set by the new `siteSidebar` setting, instead of being hardcoded.
 - `siteHome` and `siteCSS` in `config.py` are now used (home redirect and stylesheet); removed unused `siteCSSOverride` and unused imports.
 - Top bar logo is set by `siteLogo` in `config.py` (a file in `static/`); templates can read all settings through `site`.
 - `siteSidebarPills` option: sidebar links render as pale rounded buttons that contrast with the solid action pills.
@@ -33,6 +36,8 @@ Format based on [Keep a Changelog](https://keepachangelog.com/).
 - Page rendering uses shared `readpage()` / `renderpage()` helpers and a single `MD_EXTENSIONS` list.
 
 ### Fixed
+- Several `[[wikilinks]]` or image embeds on one line are matched separately (the patterns used to run across links).
+- The newest save is always the latest attribution, even when two people save within the same second.
 - Saved pages keep their file permissions instead of becoming owner-only.
 - Attribution ignores stray files in a page's history folder.
 - The missing-name error no longer resets the conflict check.

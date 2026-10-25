@@ -8,6 +8,7 @@ import threading
 from datetime import datetime, timedelta
 from urllib.parse import urlsplit
 from flask import Flask, abort, redirect, send_from_directory, g, render_template, request, url_for
+from werkzeug.exceptions import NotFound
 from werkzeug.utils import safe_join
 import config
 import os
@@ -35,7 +36,7 @@ def inject_site():
 def index():
     return redirect(url_for('displaypage', pagename=config.siteHome))
 
-@app.route("/_assets/<filename>")
+@app.route("/" + config.siteAssets + "/<filename>")
 ## Send an image or file from asset directory
 def sendfile(filename):
     directory = os.path.join(config.siteBase, config.sitePages, config.siteAssets) #app.config['UPLOAD_FOLDER'])
@@ -101,8 +102,6 @@ def readpage(*names):
 ## Edit history: every save is also written to Pages/.history/<page>/<YYYYmmddTHHMMSS>__<editor>.md
 ## The newest file there gives the page's attribution; restoring = saving an older file's text again.
 TS_FORMAT = "%Y%m%dT%H%M%S"
-EDITOR_COOKIE = "hiw_editor"
-EDITOR_COOKIE_AGE = 60 * 60 * 24 * 30
 
 
 def cleanname(name):
@@ -190,8 +189,9 @@ def savepage(names, content, editor):
     hdir = historydir(names)
     os.makedirs(hdir, exist_ok=True)
     when = datetime.now()
-    # two saves within one second must not share a snapshot name
-    while os.path.exists(os.path.join(hdir, "{}__{}.md".format(when.strftime(TS_FORMAT), editor))):
+    # snapshots sort by timestamp, so every save of a page needs its own second
+    taken = {name[:15] for name in os.listdir(hdir)}
+    while when.strftime(TS_FORMAT) in taken:
         when += timedelta(seconds=1)
     snapshot = "{}__{}.md".format(when.strftime(TS_FORMAT), editor)
     with open(os.path.join(hdir, snapshot), "w", encoding="utf-8", newline="\n") as f:
@@ -235,7 +235,7 @@ def editpage(path):
     names = tuple(path.split("/"))
     if len(names) > 2:
         abort(404)
-    cookie = cleanname(request.cookies.get(EDITOR_COOKIE))
+    cookie = cleanname(request.cookies.get(config.siteEditorCookie))
     editor = cookie
     error = None
     base = pageversion(names)
@@ -257,7 +257,7 @@ def editpage(path):
                         " by {} at {}".format(who, when.strftime("%H:%M")) if who and when else "")
             if error is None:
                 response = redirect(pageurl(names))
-                response.set_cookie(EDITOR_COOKIE, editor, max_age=EDITOR_COOKIE_AGE, samesite="Lax", httponly=True)
+                response.set_cookie(config.siteEditorCookie, editor, max_age=config.siteEditorCookieDays * 86400 or None, samesite="Lax", httponly=True)
                 return response
         source = request.form.get("content", "")
     elif request.args.get("restore"):
@@ -305,7 +305,7 @@ def sitemap():
     rootpages = [(name, url_for("displaypage", pagename=name)) for name in listpages(base)]
     namespaces = []
     for ns in sorted(os.listdir(base), key=str.lower):
-        if NAME_RE.match(ns) and not ns.startswith("_") and os.path.isdir(os.path.join(base, ns)):
+        if NAME_RE.match(ns) and ns != config.siteAssets and os.path.isdir(os.path.join(base, ns)):
             pages = [(name, url_for("displaynspage", namespace=ns, pagename=name)) for name in listpages(os.path.join(base, ns))]
             if pages:
                 namespaces.append((ns, pages))
@@ -313,7 +313,7 @@ def sitemap():
     g.pagename = "Site Map"
     return render_template("sitemap.html", rootpages=rootpages, namespaces=namespaces, sidebarhtml=showsidebar())
 
-@app.route("/<namespace>/_assets/<filename>")
+@app.route("/<namespace>/" + config.siteAssets + "/<filename>")
 ## Send an image or file from asset directory
 def sendnsfile(namespace, filename):
     if not NAME_RE.match(namespace):
@@ -329,12 +329,12 @@ def favicon():
 def showsidebar():
     logging.debug('Showsidebar.')
     try:
-        with open(os.path.join(config.siteBase, config.sitePages, "wiki", "sidebar.md"), "r", encoding="utf-8") as sidebar:
+        with open(pagepath(tuple(config.siteSidebar.split("/"))), "r", encoding="utf-8") as sidebar:
             source = sidebar.read()
-    except OSError:
-        logging.debug('Unable to open wiki:sidebar.md')
+    except (OSError, NotFound):
+        logging.debug('Unable to open sidebar page ' + config.siteSidebar)
         return ""
-    logging.info('returning sidebar.md')
+    logging.info('returning sidebar')
     return markdown.markdown(source, extensions=SIDEBAR_EXTENSIONS)
 
 
