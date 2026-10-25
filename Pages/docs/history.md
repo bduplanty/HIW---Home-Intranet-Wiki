@@ -9,18 +9,20 @@ The filename holds the date and time and the editor's name. The newest file is w
 
 ## Looking at old versions
 
-Open the folder for the page in Finder or a terminal and read the files; they are plain Markdown. Folders starting with a dot are hidden in Finder (press Cmd+Shift+. to show them).
+Click **View Page History** at the right of the page footer, after the *Last edited* information. It lists every saved version, newest first, with the date, time and editor. **View** shows that version as it was rendered then.
 
 ## Restoring a version
 
- 1. Open the old snapshot and copy its text.
- 2. Click **Edit** on the page, replace the text, and **Save**.
+Click **Restore** next to a version in the list (or **Restore this version** while viewing it). The editor opens with that version's text in it. Review it and press **Save**.
 
-The restore is itself saved as a new version, so nothing is ever lost, including the version you replaced.
+The restore is itself saved as a new version, so nothing is ever lost, including the version you replaced. If someone else changed the page after you opened the editor, the usual [[docs:editing|conflict warning]] appears.
+
+You can also read the snapshot files directly: they are plain Markdown. Folders starting with a dot are hidden in Finder (press Cmd+Shift+. to show them).
 
 ## Notes
 
  - Snapshots are full copies, not diffs. For small text pages this is a few kilobytes per save.
  - Delete old snapshot files by hand if you want to prune.
+ - History is at `/_history/<page>/` or `/_history/<namespace>/<page>/`.
  - Pages edited outside the wiki (in a text editor, or by git) are not snapshotted until they are next saved through the editor.
- - `Pages/.history/` can be added to `.gitignore` if you do not want snapshots committed.
+ - `Pages/.history/` is ignored by git (the `.history/` rule in `.gitignore`), so snapshots are not in the repository. Back that folder up separately if you want the history kept.

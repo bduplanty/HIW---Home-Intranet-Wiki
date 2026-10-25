@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  Site Map
+{% endblock %}
+
+{% block content %}
+  <h1>Site map</h1>
+  {% if rootpages %}
+  <h2>Pages</h2>
+  <ul>
+    {% for name, url in rootpages %}<li><a href="{{ url }}">{{ name }}</a></li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {% for ns, pages in namespaces %}
+  <h2>{{ ns }}</h2>
+  <ul>
+    {% for name, url in pages %}<li><a href="{{ url }}">{{ ns }}:{{ name }}</a></li>
+    {% endfor %}
+  </ul>
+  {% endfor %}
+{% endblock %}
+
+{% block sidebar%}
+  {{ sidebarhtml|safe }}
+{% endblock %}

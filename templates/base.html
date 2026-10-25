@@ -2,8 +2,9 @@
 <html lang="en">
     <head>
         {% block head %}
-        <link rel="stylesheet" href="{{ url_for('static', filename='default.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename=site.siteCSS) }}">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <link rel="icon" href="{{ url_for('static', filename=site.siteLogo) }}">
         <title>{% block title %}{{g.siteName}}{% endblock %}</title>
         {% endblock %}
     </head>  
@@ -11,7 +12,7 @@
         <div class="container">
             <div id ="navi">
                 {% block topnavigation %}  
-                    <a class="active" href="/">Home</a>
+                    <a class="active" href="/" title="Home"><img class="navlogo" src="{{ url_for('static', filename=site.siteLogo) }}" alt="Home"><span class="sitename">{{ site.siteName }}</span></a>
                 {% endblock %}
             </div>
             <div id="head">
@@ -19,10 +20,15 @@
                     Placeholder HEADER
                 {% endblock %}
             </div>
-            <div id="sidebar">
-                {% block sidebar %}
-                    Placeholder Sidebar
-                {% endblock %}
+            <div id="sidebar"{% if site.siteSidebarPills %} class="navpills"{% endif %}>
+                <details id="navbox" data-remember="hiwnav" open>
+                    <summary class="pill">Navigation</summary>
+                    <div class="navbody">
+                        {% block sidebar %}
+                            Placeholder Sidebar
+                        {% endblock %}
+                    </div>
+                </details>
             </div>
             <div id="page">
                 {% for message in get_flashed_messages() %}
@@ -30,12 +36,23 @@
                 {% endfor %}
                 {% block content %}{% endblock %}
             </div>
+            {% block toc %}{% endblock %}
             <div id="foot">
-                {% block footer %}
-                Powered by Python and HIW.
-                {% endblock %}
+                <span class="footleft">{% block footer %}Powered by Python and HIW.{% endblock %}</span>
+                <span class="footcenter"><a href="{{ url_for('sitemap') }}">Site Map</a></span>
+                <span class="footright">{% block footerright %}{% endblock %}</span>
             </div>
         </div>
+        <script>
+            // remember whether each collapsible panel was left open or closed
+            document.querySelectorAll('details[data-remember]').forEach(function (box) {
+                var key = box.getAttribute('data-remember');
+                try {
+                    if (localStorage.getItem(key) === 'closed') box.open = false;
+                    box.addEventListener('toggle', function () { localStorage.setItem(key, box.open ? 'open' : 'closed'); });
+                } catch (e) {}
+            });
+        </script>
     </body>
 </html>
 

@@ -2,6 +2,10 @@
 
 Pages use [Markdown](https://daringfireball.net/projects/markdown/) with Python-Markdown's *extra* features (tables, footnotes, fenced code), a table of contents, and admonitions. See also [[markdown-cheat-sheet]].
 
+## Contents panel
+
+The right-hand **Contents** panel lists the level 1 and level 2 headings (`#` and `##`) of the page. It stays in view while you scroll; click **Contents** to minimize or expand it. Your choice is remembered in the browser.
+
 ## Links
 
     [[page]]                      link to a page in the root

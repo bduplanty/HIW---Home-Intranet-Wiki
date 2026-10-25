@@ -29,3 +29,6 @@ This is a work in progress.  More to follow, if anyone is interested...
  - Activate (Windows): ```env\Scripts\activate```
  - Deactivate: ```deactivate```
 
+## Tests
+ - ```pip3 install -r requirements-dev.txt```
+ - ```python3 -m pytest``` (tests use a throwaway wiki and never touch `Pages/`)

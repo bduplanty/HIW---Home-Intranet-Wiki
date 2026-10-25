@@ -40,13 +40,14 @@ import logging
 logging.basicConfig(level=logging.INFO)
 
 # Global Vars
-NSLINK_RE =r'\[{2}(.*?)\:(.*?)\]{2}'
-NSLINKT_RE =r'\[{2}(.*?)\:(.*?)\|(.*?)\]{2}'
-NSLINKTA_RE = r'\[{2}([^:].[^:]*)\|(.*?)\]{2}'
 MARK_RE = r'(={2})(?!\s)(.+?)(?<!\s)={2}'
-IMAGENSIZE_RE =r'\!\[{2}(.*?)\]{2}' 
-IMAGESSIZE_RE =r'\!\[{2}(.*?)\|(.*?)\]{2}'
-IMAGEMSIZE_RE =r'\!\[{2}(.*?)\|(.*?)x(.*?)\]{2}'
+# Each group excludes brackets (and | or : where they delimit parts) so that several links on one line match separately.
+NSLINK_RE = r'\[\[([^\[\]|:]+):([^\[\]|]+?)\]\]'
+NSLINKT_RE = r'\[\[([^\[\]|:]+):([^\[\]|]+?)\|([^\[\]]*?)\]\]'
+NSLINKTA_RE = r'\[\[([^\[\]|:]+)\|([^\[\]]*?)\]\]'
+IMAGENSIZE_RE = r'!\[\[([^\[\]|]+?)\]\]'
+IMAGESSIZE_RE = r'!\[\[([^\[\]|]+?)\|([^\[\]|]*?)\]\]'
+IMAGEMSIZE_RE = r'!\[\[([^\[\]|]+?)\|([^\[\]|x]*?)x([^\[\]|]*?)\]\]'
 #NS example - https://regex101.com/r/Ycdx5c/1
 #NS with title - https://regex101.com/r/4KygKW/1
 #NSTA - allow for root links with title

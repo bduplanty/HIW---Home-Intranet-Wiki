@@ -18,7 +18,12 @@ Settings are in `config.py`.
 | `siteName` | name used in the page title |
 | `siteHostname`, `sitePort` | where to listen (`0.0.0.0` means every device on your network; port can be set with the `PORT` environment variable, default 5001) |
 | `sitePages` | folder holding the pages (`Pages`) |
-| `siteAssets` | folder name for images and files (`_assets`) |
+| `siteAssets` | folder name for images and files (`_assets`); also the URL prefix they are served from |
+| `siteSidebarPills` | `True` shows each sidebar link as a button, `False` shows plain text links |
+| `siteEditorCookie`, `siteEditorCookieDays` | cookie name and the number of days an editor's name is remembered (`hiw_editor`, `30`) |
+| `siteLogo` | image shown at the left of the top bar, a file inside the `static` folder (`logo.png`); drop your own image in `static/` and change this name |
+| `siteHome` | page opened at `/` (`start`) |
+| `siteSidebar` | page shown in the left sidebar (`wiki/sidebar`) |
 | `siteHistory` | folder under the pages folder for snapshots (`.history`) |
 
 ## Layout
