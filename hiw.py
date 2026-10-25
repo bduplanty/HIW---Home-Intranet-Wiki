@@ -74,8 +74,8 @@ class EscapeHtmlExtension(Extension):
         md.treeprocessors.register(SafeUrlTreeprocessor(md), 'safeurl', 10)
 
 
-MD_EXTENSIONS = ['extra', 'wikilinks', 'toc', 'admonition', 'MarkdownHighlight.highlight:HighlightExtension', 'hiwmd:hiwExtension', EscapeHtmlExtension()]
-SIDEBAR_EXTENSIONS = ['extra', 'wikilinks', 'MarkdownHighlight.highlight:HighlightExtension', 'hiwmd:hiwExtension', EscapeHtmlExtension()]
+MD_EXTENSIONS = ['extra', 'wikilinks', 'toc', 'admonition', 'hiwmd:hiwExtension', EscapeHtmlExtension()]
+SIDEBAR_EXTENSIONS = ['extra', 'wikilinks', 'hiwmd:hiwExtension', EscapeHtmlExtension()]
 NAME_RE = re.compile(r'^[\w\- ]+$')
 
 

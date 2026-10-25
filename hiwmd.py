@@ -9,7 +9,7 @@ Deals with:
 
   [[ns:page]]
 
-  ==highlighted==  - renders as <mark>
+  ==highlighted==, ???highlighted???, ___highlighted___  - render as <mark>
 
 Based and exapnded on the wikikinks extension
 """
@@ -32,7 +32,7 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 '''
 
 from markdown import Extension
-from markdown.inlinepatterns import InlineProcessor, SimpleTagPattern
+from markdown.inlinepatterns import InlineProcessor
 import xml.etree.ElementTree as etree
 import re
 import logging
@@ -40,7 +40,8 @@ import logging
 logging.basicConfig(level=logging.INFO)
 
 # Global Vars
-MARK_RE = r'(={2})(?!\s)(.+?)(?<!\s)={2}'
+# ==text== (no space inside the markers, so "a == b == c" is left alone), ???text??? and ___text___
+MARK_RE = r'(?:(==)(?!\s)(.+?)(?<!\s)==|(\?\?\?)(.+?)\?\?\?|(___)(.+?)___)'
 # Each group excludes brackets (and | or : where they delimit parts) so that several links on one line match separately.
 NSLINK_RE = r'\[\[([^\[\]|:]+):([^\[\]|]+?)\]\]'
 NSLINKT_RE = r'\[\[([^\[\]|:]+):([^\[\]|]+?)\|([^\[\]]*?)\]\]'
@@ -94,8 +95,8 @@ class hiwExtension(Extension):
         md.inlinePatterns.register(wikilinkNSTAPattern, 'nstapattern', 77)
         logging.info("hiw NS-TA registered")
 
-        # ==text== highlight; below backticks so code spans stay literal
-        md.inlinePatterns.register(SimpleTagPattern(MARK_RE, 'mark'), 'hiwmark', 65)
+        # ==text==, ???text??? and ___text___ highlight; below backticks so code spans stay literal, above emphasis so ___ wins
+        md.inlinePatterns.register(markInlineProcessor(MARK_RE), 'hiwmark', 65)
         logging.info("hiw mark registered")
 
         wikilinkEmbedMultiSizePattern = hiwembedInlineProcessor(IMAGEMSIZE_RE, self.getConfigs())
@@ -112,6 +113,15 @@ class hiwExtension(Extension):
         wikilinkEmbedNoSizePattern.md = md
         md.inlinePatterns.register(wikilinkEmbedNoSizePattern, 'embednosize', 78)
         logging.info("embednosize registered")
+
+class markInlineProcessor(InlineProcessor):
+    """Wrap ==text==, ???text??? or ___text___ in <mark>."""
+
+    def handleMatch(self, m, data):
+        el = etree.Element('mark')
+        el.text = m.group(2) or m.group(4) or m.group(6)
+        return el, m.start(0), m.end(0)
+
 
 class hiwInlineProcessor(InlineProcessor):
     def __init__(self, pattern, config):

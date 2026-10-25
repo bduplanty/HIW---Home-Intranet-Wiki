@@ -5,6 +5,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- MIT `LICENSE`.
 - Automated tests (`pytest`) in `tests/`; development dependencies in `requirements-dev.txt`.
 - README instructions for creating, activating and deactivating the virtual environment.
 - Page editing with EasyMDE (vendored in `static/easymde/`, works offline): pill-style "Edit" button in the header, `/_edit/<page>/` and `/_edit/<ns>/<page>/` routes, atomic saves, new pages can be created by editing them.
@@ -22,8 +23,11 @@ Format based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Removed
 - TinyMCE (was never wired up).
+- The `MarkdownHighlight` dependency (unmaintained, and it broke newer Markdown releases); `???text???`, `___text___` and `==text==` are now all built into `hiwmd.py`.
+- Unused dependencies (`requests`, `certifi`, `urllib3`, `idna`, `charset-normalizer`) and the frozen 2021 pins.
 
 ### Changed
+- `requirements.txt` lists only direct dependencies with compatible-release pins (`Flask~=3.1`, `Markdown~=3.8`); tested on Python 3.9 and 3.14.
 - Editor cookie name and lifetime are now `siteEditorCookie` and `siteEditorCookieDays` in `config.py`, and every setting there is commented.
 - The asset URL prefix follows `siteAssets` and the sidebar page is set by the new `siteSidebar` setting, instead of being hardcoded.
 - `siteHome` and `siteCSS` in `config.py` are now used (home redirect and stylesheet); removed unused `siteCSSOverride` and unused imports.
