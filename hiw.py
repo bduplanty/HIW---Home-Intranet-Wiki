@@ -22,7 +22,13 @@ logging.basicConfig(level=logging.INFO)
 # if wiki:nav?? - display first x lines as navigation? otherwise home only?
 # if wiki:footer - replace footer
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder=config.siteStatic)
+
+
+@app.context_processor
+def inject_site():
+    return {"site": config}
+
 
 @app.route("/")
 def index():
@@ -157,14 +163,25 @@ def savepage(names, content, editor):
     logging.info("Saved " + path + " as " + editor)
 
 
+def flattentoc(tokens, maxlevel=2):
+    """Flatten Markdown's nested toc_tokens into (level, id, name) for headings up to maxlevel."""
+    flat = []
+    for token in tokens:
+        if token["level"] <= maxlevel:
+            flat.append((token["level"], token["id"], token["name"]))
+        flat.extend(flattentoc(token["children"], maxlevel))
+    return flat
+
+
 def renderpage(names, source):
     g.siteName = config.siteName
     g.pagename = ":".join(names)
     g.editurl = url_for("editpage", path="/".join(names))
     g.historyurl = url_for("pagehistory", path="/".join(names))
     g.editor, g.edited = lastedit(names, pagepath(names))
-    html = markdown.markdown(source, extensions=MD_EXTENSIONS)
-    return render_template("page.html", html=html, sidebarhtml=showsidebar())
+    md = markdown.Markdown(extensions=MD_EXTENSIONS)
+    html = md.convert(source)
+    return render_template("page.html", html=html, sidebarhtml=showsidebar(), toc=flattentoc(md.toc_tokens))
 
 
 @app.route("/<pagename>/")
@@ -235,6 +252,30 @@ def pagehistory(path):
     return render_template("history.html", versions=versions(names), version=version, html=html,
                            who=who, when=when, sidebarhtml=showsidebar())
 
+def listpages(directory):
+    """Names of the pages (.md files) directly inside a directory, sorted."""
+    try:
+        files = os.listdir(directory)
+    except OSError:
+        return []
+    names = [f[:-3] for f in files if f.endswith(".md") and NAME_RE.match(f[:-3])]
+    return sorted(names, key=str.lower)
+
+
+@app.route("/_sitemap/")
+def sitemap():
+    base = os.path.join(config.siteBase, config.sitePages)
+    rootpages = [(name, url_for("displaypage", pagename=name)) for name in listpages(base)]
+    namespaces = []
+    for ns in sorted(os.listdir(base), key=str.lower):
+        if NAME_RE.match(ns) and not ns.startswith("_") and os.path.isdir(os.path.join(base, ns)):
+            pages = [(name, url_for("displaynspage", namespace=ns, pagename=name)) for name in listpages(os.path.join(base, ns))]
+            if pages:
+                namespaces.append((ns, pages))
+    g.siteName = config.siteName
+    g.pagename = "Site Map"
+    return render_template("sitemap.html", rootpages=rootpages, namespaces=namespaces, sidebarhtml=showsidebar())
+
 @app.route("/<namespace>/_assets/<filename>")
 ## Send an image or file from asset directory
 def sendnsfile(namespace, filename):
@@ -244,8 +285,7 @@ def sendnsfile(namespace, filename):
 
 @app.route('/favicon.ico')
 def favicon():
-    return send_from_directory(os.path.join(app.root_path, config.siteStatic),
-        'favicon.ico', mimetype='image/vnd.microsoft.icon')
+    return send_from_directory(os.path.join(app.root_path, config.siteStatic), config.siteLogo)
 
 def showsidebar():
     logging.debug('Showsidebar.')

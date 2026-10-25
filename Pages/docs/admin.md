@@ -19,6 +19,8 @@ Settings are in `config.py`.
 | `siteHostname`, `sitePort` | where to listen (`0.0.0.0` means every device on your network; port can be set with the `PORT` environment variable, default 5001) |
 | `sitePages` | folder holding the pages (`Pages`) |
 | `siteAssets` | folder name for images and files (`_assets`) |
+| `siteSidebarPills` | `True` shows each sidebar link as a button, `False` shows plain text links |
+| `siteLogo` | image shown at the left of the top bar, a file inside the `static` folder (`logo.png`); drop your own image in `static/` and change this name |
 | `siteHistory` | folder under the pages folder for snapshots (`.history`) |
 
 ## Layout

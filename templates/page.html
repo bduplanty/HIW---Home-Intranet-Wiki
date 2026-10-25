@@ -12,7 +12,21 @@
   {{ sidebarhtml|safe }}
 {% endblock %}
 
-{% block footer %}
-  {{ super() }}
-  <span class="hiwright">{% if g.edited %}Last edited {% if g.editor %}by {{ g.editor }} {% endif %}on {{ g.edited.strftime('%Y-%m-%d %H:%M') }} &middot; {% endif %}<a href="{{ g.historyurl }}">View Page History</a></span>
+{% block toc %}
+  {% if toc %}
+  <div id="toc">
+    <details id="tocbox" data-remember="hiwtoc" open>
+      <summary class="pill">Contents</summary>
+      <ul>
+        {% for level, id, name in toc %}
+        <li class="toc{{ level }}"><a href="#{{ id }}">{{ name }}</a></li>
+        {% endfor %}
+      </ul>
+    </details>
+  </div>
+  {% endif %}
+{% endblock %}
+
+{% block footerright %}
+  {% if g.edited %}Last edited {% if g.editor %}by {{ g.editor }} {% endif %}on {{ g.edited.strftime('%Y-%m-%d %H:%M') }} &middot; {% endif %}<a href="{{ g.historyurl }}">View Page History</a>
 {% endblock %}

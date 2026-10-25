@@ -15,6 +15,10 @@ siteAssets = "_assets"
 siteHistory = ".history"  # under sitePages; one snapshot per save
 siteHome = "start"
 
+## Branding
+siteSidebarPills = True  # True: sidebar links are shown as buttons; False: plain text links
+siteLogo = "logo.png"  # file inside siteStatic; replace it or point this at your own image
+
 ## CSS
 siteCSS = "default.css"  # Not needed?
 siteCSSOverride = True

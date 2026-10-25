@@ -369,26 +369,28 @@ a {color: #377ba8;}
 
 .container { 
   display: grid; 
-  grid-template-columns:  .25fr 1fr 1fr 1fr; /*repeat(3, 1fr);  */
-  /*grid-template-rows: repeat(2,100px); */
+  /* sidebar 20%, page 60%, contents panel 20%; the minimums keep the side columns usable on small windows */
+  grid-template-columns: minmax(12rem, 20fr) minmax(0, 60fr) minmax(12rem, 20fr);
   background-color: white; 
-  gap: 4px; 
-  grid-template-areas:  'nav nav nav nav' 
-                        'header header header header' 
-                        'laside content content raside' 
-                        'footer footer footer footer'; 
+  gap: 0 4px; 
+  grid-template-areas:  'nav nav nav' 
+                        'header header header' 
+                        'laside content raside' 
+                        'footer footer footer'; 
 }
 .container > div {background-color: transparent; padding: 1rem;} 
 
 #head {grid-area: header;}
-#navi {grid-area: nav; background: lightgray; padding: 0 0.5rem;}
+#navi {grid-area: nav; background: #eaf4fb; border-bottom: 3px solid lightblue; padding: .25rem .5rem;}
 #sidebar {grid-area: laside;}
 #page {grid-area: content;}
 #foot {grid-area: footer;}
 #head, #foot{background-color: lightblue; color:steelblue; font-family: serif; padding: .5rem; margin: .5rem 0; display:block;}
 #head {font-size: 1.5rem; font-weight: bolder;top:0;}
 #foot {font-size: .75rem; bottom:0;}
-#navi a {text-decoration: none;}
+#navi a {text-decoration: none; display: inline-flex; align-items: center; gap: .75rem;}
+#navi .navlogo {height: 44px; width: 44px;}
+#navi .sitename {font-family: serif; font-size: 1.9rem; font-weight: bold; line-height: 1.2; color: steelblue;}
 .flash {margin: 1em 0; padding: 1em; background: #cae6f6; border: 1px solid #377ba8;}
 .admonition {padding: 15px;  margin-bottom: 21px; border-left: 10px solid transparent;}
 .admonition .title {margin: 0; text-transform: uppercase; padding-left: 3px; border: 1px solid; border-style: hidden hidden solid;}
@@ -408,3 +410,52 @@ a {color: #377ba8;}
 .pill-quiet {background-color: transparent; color: steelblue;}
 .pill-quiet:hover {background-color: lightblue; color: steelblue;}
 .editform .CodeMirror {min-height: 60vh;}
+/* table of contents: sits in the right-hand grid column and stays in view while the page scrolls */
+#toc {grid-area: raside; position: sticky; top: 1rem; align-self: start; max-height: calc(100vh - 2rem); overflow-y: auto;}
+#toc summary, #sidebar summary {list-style: none;}
+#toc summary::-webkit-details-marker, #sidebar summary::-webkit-details-marker {display: none;}
+#toc summary::after, #sidebar summary::after {content: " \2212";}
+#toc details:not([open]) summary::after, #sidebar details:not([open]) summary::after {content: " +";}
+#sidebar .navbody {margin-top: .5rem; padding: .25rem .75rem; border-left: 3px solid lightblue;}
+#toc ul {list-style: none; margin: .5rem 0 0; padding: .5rem .75rem; border-left: 3px solid lightblue; font-size: .85rem; line-height: 1.35;}
+#toc li {margin: .25rem 0;}
+#toc li.toc2 {margin-left: 1rem;}
+#toc a {text-decoration: none;}
+#toc a:hover {text-decoration: underline;}
+
+/* sidebar links as buttons (siteSidebarPills): pale rounded rectangles, so they read differently from the solid steelblue action pills */
+#sidebar.navpills .navbody {border-left: 0; padding: .25rem 0;}
+#sidebar.navpills .navbody p {margin: 0;}
+#sidebar.navpills .navbody ul {list-style: none; margin: 0; padding: 0;}
+#sidebar.navpills .navbody a {display: block; margin: .3rem 0; padding: .3rem .9rem; border: 1px solid lightblue; border-radius: .6rem; background-color: #eaf4fb; color: steelblue; font-size: .9rem; text-decoration: none;}
+#sidebar.navpills .navbody a:hover {background-color: lightblue; color: #1f5f8b;}
+
+/* header bar: title on the left, action pill vertically centered on the right */
+#head {display: flex; align-items: center; gap: .5rem; margin-top: 0;}
+#head .pill {margin-left: auto;}
+
+/* footer: left text, centered Site Map link, right attribution */
+#foot {display: flex; justify-content: space-between; align-items: baseline; gap: .5rem;}
+#foot .footleft, #foot .footright {flex: 1;}
+#foot .footcenter {text-align: center;}
+#foot .footright {text-align: right;}
+
+/* phones and small tablets (iOS Safari etc.): one column, contents panel above the page, sidebar below it */
+@media (max-width: 800px) {
+  html {padding: .5rem;}
+  .container {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'nav' 'header' 'raside' 'content' 'laside' 'footer';
+  }
+  .container > div {padding: .5rem;}
+  #toc {position: static; max-height: none;}
+  #page img {max-width: 100%; height: auto;}
+  #page table {display: block; overflow-x: auto;}
+  #head {font-size: 1.2rem;}
+  #navi .sitename {font-size: 1.4rem;}
+  #foot {flex-direction: column; align-items: center; text-align: center;}
+  #foot .footright {text-align: center;}
+  /* iOS Safari zooms the page when a focused field is smaller than 16px */
+  input, textarea, select, .CodeMirror {font-size: 16px;}
+  .pill {padding: .3rem 1rem;}
+}
