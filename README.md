@@ -65,23 +65,27 @@ Requires Python 3 (tested with 3.9 and 3.14). Run every command from the project
         source env/bin/activate        # macOS / Linux
         env\Scripts\activate           # Windows
 
- 4. Install the dependencies (first time only, with the environment active):
+ 4. Upgrade pip (first time only). A new virtual environment starts with the older pip that ships with Python:
 
-        pip3 install -r requirements.txt
+        python -m pip install --upgrade pip
 
- 5. Start the wiki:
+ 5. Install the dependencies (first time only, with the environment active):
+
+        python -m pip install -r requirements.txt
+
+ 6. Start the wiki:
 
         python3 hiw.py
 
- 6. Open <http://localhost:5001/> in a browser.
+ 7. Open <http://localhost:5001/> in a browser.
 
 To **stop** the wiki, press Ctrl+C in the terminal.
 
 To **exit** the virtual environment, run `deactivate`. The `(env)` in your prompt goes away.
 
-Next time, just repeat steps 3 and 5: enter the environment, then start the wiki. If the
-packages are ever out of date, enter the environment and run step 4 again. To start over,
-delete the `env` folder and repeat steps 2 to 4.
+Next time, just repeat steps 3 and 6: enter the environment, then start the wiki. If the
+packages are ever out of date, enter the environment and run step 5 again. To start over,
+delete the `env` folder and repeat steps 2 to 5.
 
 The repository includes a few sample pages in `Pages/`. Delete them or start editing.
 To reach the wiki from other devices, use your computer's network address, for example
@@ -107,7 +111,7 @@ Search, page deletion, media upload and management, and logins.
 
 With the virtual environment active:
 
-    pip3 install -r requirements-dev.txt
+    python -m pip install -r requirements-dev.txt
     python3 -m pytest        # uses a throwaway wiki, never touches Pages/
 
 Layout: `hiw.py` (the app), `hiwmd.py` (Markdown extension for links, embeds and highlighting),

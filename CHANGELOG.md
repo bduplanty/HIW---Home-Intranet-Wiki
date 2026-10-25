@@ -5,6 +5,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- README install steps now include upgrading pip inside the virtual environment.
 - MIT `LICENSE`.
 - Automated tests (`pytest`) in `tests/`; development dependencies in `requirements-dev.txt`.
 - README instructions for creating, activating and deactivating the virtual environment.
