@@ -23,6 +23,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/).
 - TinyMCE (was never wired up).
 
 ### Changed
+- `siteHome` and `siteCSS` in `config.py` are now used (home redirect and stylesheet); removed unused `siteCSSOverride` and unused imports.
 - Top bar logo is set by `siteLogo` in `config.py` (a file in `static/`); templates can read all settings through `site`.
 - `siteSidebarPills` option: sidebar links render as pale rounded buttons that contrast with the solid action pills.
 - Site name (`siteName` in `config.py`) shown in bold next to the logo in the top bar.
@@ -32,6 +33,10 @@ Format based on [Keep a Changelog](https://keepachangelog.com/).
 - Page rendering uses shared `readpage()` / `renderpage()` helpers and a single `MD_EXTENSIONS` list.
 
 ### Fixed
+- Saved pages keep their file permissions instead of becoming owner-only.
+- Attribution ignores stray files in a page's history folder.
+- The missing-name error no longer resets the conflict check.
+- Two saves within one second no longer overwrite each other's snapshot.
 - Favicon: pages now declare an icon, and `/favicon.ico` serves the `siteLogo` image with its correct type (it was a PNG sent as an .ico).
 - Removed the white gap between the top bar and the page title bar.
 - The header's Edit / Back to page pill is vertically centered in the bar.
@@ -43,7 +48,9 @@ Format based on [Keep a Changelog](https://keepachangelog.com/).
 - `.hiwcenter` used invalid `float: center`; it now centers as a block element.
 
 ### Security
-- Raw HTML in page source is now escaped instead of passed through, preventing stored XSS.
+- Raw HTML in page source is now escaped instead of passed through.
+- Link and image URLs with schemes other than http, https and mailto (such as `javascript:`) are replaced with `#`.
+- Name cookie is HttpOnly; namespace names are validated on the namespace asset route.
 
 ## 2021-09-25
 

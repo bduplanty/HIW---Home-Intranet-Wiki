@@ -20,5 +20,4 @@ siteSidebarPills = True  # True: sidebar links are shown as buttons; False: plai
 siteLogo = "logo.png"  # file inside siteStatic; replace it or point this at your own image
 
 ## CSS
-siteCSS = "default.css"  # Not needed?
-siteCSSOverride = True
+siteCSS = "default.css"  # stylesheet inside siteStatic

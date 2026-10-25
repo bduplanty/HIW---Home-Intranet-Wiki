@@ -2,18 +2,19 @@
 
 import hashlib
 import logging
+import stat
 import tempfile
 import threading
-from datetime import datetime
-from flask import Flask, abort, redirect, send_from_directory, flash, g, make_response, render_template, request, url_for
+from datetime import datetime, timedelta
+from urllib.parse import urlsplit
+from flask import Flask, abort, redirect, send_from_directory, g, render_template, request, url_for
 from werkzeug.utils import safe_join
 import config
 import os
 import re
 import markdown
 from markdown import Extension
-from MarkdownHighlight.highlight import HighlightExtension
-from hiwmd import hiwExtension
+from markdown.treeprocessors import Treeprocessor
 
 logging.basicConfig(level=logging.INFO)
 
@@ -32,7 +33,7 @@ def inject_site():
 
 @app.route("/")
 def index():
-    return redirect('/start/')
+    return redirect(url_for('displaypage', pagename=config.siteHome))
 
 @app.route("/_assets/<filename>")
 ## Send an image or file from asset directory
@@ -41,12 +42,35 @@ def sendfile(filename):
     logging.info("Asset requested: " + directory + " | " + filename)
     return send_from_directory(directory, filename)  #flask.send_from_directory
 
+SAFE_SCHEMES = ("", "http", "https", "mailto")
+
+
+def safeurl(url):
+    """Return url if it is relative or uses an allowed scheme, otherwise '#'."""
+    # browsers ignore whitespace and control characters inside a scheme ("java\tscript:")
+    cleaned = "".join(ch for ch in url if ord(ch) > 32)
+    try:
+        scheme = urlsplit(cleaned).scheme.lower()
+    except ValueError:
+        return "#"
+    return url if scheme in SAFE_SCHEMES else "#"
+
+
+class SafeUrlTreeprocessor(Treeprocessor):
+    def run(self, root):
+        for el in root.iter():
+            for attr in ("href", "src"):
+                if attr in el.attrib:
+                    el.set(attr, safeurl(el.get(attr)))
+
+
 class EscapeHtmlExtension(Extension):
-    """Escape raw HTML in page source instead of passing it through."""
+    """Escape raw HTML in page source instead of passing it through, and drop unsafe link schemes such as javascript:."""
 
     def extendMarkdown(self, md):
         md.preprocessors.deregister('html_block')
         md.inlinePatterns.deregister('html')
+        md.treeprocessors.register(SafeUrlTreeprocessor(md), 'safeurl', 10)
 
 
 MD_EXTENSIONS = ['extra', 'wikilinks', 'toc', 'admonition', 'MarkdownHighlight.highlight:HighlightExtension', 'hiwmd:hiwExtension', EscapeHtmlExtension()]
@@ -91,11 +115,9 @@ def historydir(names):
 
 def lastedit(names, path):
     """Return (editor, datetime) for a page; editor is None if it was never saved through the editor."""
-    try:
-        newest = sorted(os.listdir(historydir(names)))[-1]
-        return newest[17:-3], datetime.strptime(newest[:15], TS_FORMAT)
-    except (OSError, IndexError, ValueError):
-        pass
+    saved = versions(names)
+    if saved:
+        return saved[0][1], saved[0][2]
     try:
         return None, datetime.fromtimestamp(os.path.getmtime(path))
     except OSError:
@@ -151,13 +173,27 @@ def readversion(names, version):
 def savepage(names, content, editor):
     path = pagepath(names)
     os.makedirs(os.path.dirname(path), exist_ok=True)
+    try:
+        mode = stat.S_IMODE(os.stat(path).st_mode)
+    except OSError:
+        mode = 0o644
     fd, tmp = tempfile.mkstemp(dir=os.path.dirname(path), suffix=".tmp")
-    with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as f:
-        f.write(content)
-    os.replace(tmp, path)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as f:
+            f.write(content)
+        os.chmod(tmp, mode)
+        os.replace(tmp, path)
+    except BaseException:
+        if os.path.exists(tmp):
+            os.remove(tmp)
+        raise
     hdir = historydir(names)
     os.makedirs(hdir, exist_ok=True)
-    snapshot = "{}__{}.md".format(datetime.now().strftime(TS_FORMAT), editor)
+    when = datetime.now()
+    # two saves within one second must not share a snapshot name
+    while os.path.exists(os.path.join(hdir, "{}__{}.md".format(when.strftime(TS_FORMAT), editor))):
+        when += timedelta(seconds=1)
+    snapshot = "{}__{}.md".format(when.strftime(TS_FORMAT), editor)
     with open(os.path.join(hdir, snapshot), "w", encoding="utf-8", newline="\n") as f:
         f.write(content)
     logging.info("Saved " + path + " as " + editor)
@@ -208,6 +244,7 @@ def editpage(path):
         editor = cleanname(request.form.get("name")) or cookie
         if not editor:
             error = "Please enter your name."
+            base = request.form.get("base", base)  # keep the version the editor was opened on
         else:
             with SAVE_LOCK:
                 current = pageversion(names)
@@ -220,7 +257,7 @@ def editpage(path):
                         " by {} at {}".format(who, when.strftime("%H:%M")) if who and when else "")
             if error is None:
                 response = redirect(pageurl(names))
-                response.set_cookie(EDITOR_COOKIE, editor, max_age=EDITOR_COOKIE_AGE, samesite="Lax")
+                response.set_cookie(EDITOR_COOKIE, editor, max_age=EDITOR_COOKIE_AGE, samesite="Lax", httponly=True)
                 return response
         source = request.form.get("content", "")
     elif request.args.get("restore"):
@@ -279,6 +316,8 @@ def sitemap():
 @app.route("/<namespace>/_assets/<filename>")
 ## Send an image or file from asset directory
 def sendnsfile(namespace, filename):
+    if not NAME_RE.match(namespace):
+        abort(404)
     directory = os.path.join(config.siteBase, config.sitePages, namespace, config.siteAssets) #app.config['UPLOAD_FOLDER'])
     logging.info("Asset requested: " + directory + " | " + filename)
     return send_from_directory(directory, filename)  #flask.send_from_directory

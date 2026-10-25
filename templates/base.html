@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         {% block head %}
-        <link rel="stylesheet" href="{{ url_for('static', filename='default.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename=site.siteCSS) }}">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
         <link rel="icon" href="{{ url_for('static', filename=site.siteLogo) }}">
         <title>{% block title %}{{g.siteName}}{% endblock %}</title>

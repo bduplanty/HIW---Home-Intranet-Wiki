@@ -25,4 +25,4 @@ You can also read the snapshot files directly: they are plain Markdown. Folders 
  - Delete old snapshot files by hand if you want to prune.
  - History is at `/_history/<page>/` or `/_history/<namespace>/<page>/`.
  - Pages edited outside the wiki (in a text editor, or by git) are not snapshotted until they are next saved through the editor.
- - `Pages/.history/` can be added to `.gitignore` if you do not want snapshots committed.
+ - `Pages/.history/` is ignored by git (the `.history/` rule in `.gitignore`), so snapshots are not in the repository. Back that folder up separately if you want the history kept.
