@@ -5,6 +5,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- Documentation for starting HIW automatically (macOS launchd, Linux systemd, Windows Task Scheduler).
 - README install steps now include upgrading pip inside the virtual environment.
 - MIT `LICENSE`.
 - Automated tests (`pytest`) in `tests/`; development dependencies in `requirements-dev.txt`.
